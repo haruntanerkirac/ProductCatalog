@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.Business.Abstract;
+using ProductCatalog.Entities.DTOs;
 using ProductCatalog.Entities.Models;
 
 namespace ProductCatalog.API.Controllers
@@ -38,8 +40,24 @@ namespace ProductCatalog.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddProduct(Product product)
+        public async Task<IActionResult> AddProduct([FromBody] ProductCreateDto dto, [FromServices] IValidator<ProductCreateDto> validator)
         {
+            var validationResult = await validator.ValidateAsync(dto);
+
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors
+                    .Select(e => new {Field = e.PropertyName, Error = e.ErrorMessage});
+                return BadRequest(new {Errors = errors});
+            }
+
+            var product = new Product
+            {
+                Name = dto.Name,
+                Price = dto.Price,
+                Stock = dto.Stock
+            };
+
             await _productService.AddAsync(product);
             return Ok(product);
         }
