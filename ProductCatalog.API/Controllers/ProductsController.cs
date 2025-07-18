@@ -54,14 +54,14 @@ namespace ProductCatalog.API.Controllers
                 return BadRequest(new { Errors = errors });
             }
 
-            var product = new Product
-            {
-                Name = dto.Name,
-                Price = dto.Price,
-                Stock = dto.Stock
-            };
+            //var product = new Product
+            //{
+            //    Name = dto.Name,
+            //    Price = dto.Price,
+            //    Stock = dto.Stock
+            //};
 
-            await _productService.AddAsync(product);
+            await _productService.AddAsync(dto);
             return Created();
         }
 

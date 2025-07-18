@@ -1,5 +1,6 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using ProductCatalog.API.Utilities.AutoMapper;
 using ProductCatalog.API.Validators;
 using ProductCatalog.Business.Abstract;
 using ProductCatalog.Business.Concrete;
@@ -16,15 +17,18 @@ builder.Services.AddDbContext<ProductCatalogDbContext>(options =>
 );
 
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddScoped<IProductDal, EfProductDal>();
 builder.Services.AddScoped<IProductService, ProductManager>();
 builder.Services.AddScoped<IValidator<ProductCreateDto>, ProductCreateValidator>();
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
-builder.Services.AddAutoMapper(typeof(Program));
+
+//builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 

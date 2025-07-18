@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using ProductCatalog.Business.Abstract;
 using ProductCatalog.DataAccess;
 using ProductCatalog.DataAccess.Abstract;
+using ProductCatalog.Entities.DTOs;
 using ProductCatalog.Entities.Models;
 using System;
 using System.Collections.Generic;
@@ -14,12 +16,21 @@ namespace ProductCatalog.Business.Concrete
     public class ProductManager : IProductService
     {
         private readonly IProductDal _productDal;
-        public ProductManager(IProductDal productDal)
+        private readonly IMapper _mapper;
+
+        public ProductManager(IProductDal productDal, IMapper mapper)
         {
             _productDal = productDal;
+            _mapper = mapper;
         }
 
-        public async Task AddAsync(Product product) => await _productDal.AddAsync(product);
+        public async Task AddAsync(ProductCreateDto dto)
+        {
+            var entity = _mapper.Map<Product>(dto);
+            await _productDal.AddAsync(entity);
+
+            //await _productDal.AddAsync(product);
+        }
 
         public async Task DeleteAsync(Product product) => await _productDal.DeleteAsync(product);
 
