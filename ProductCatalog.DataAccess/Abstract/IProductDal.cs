@@ -1,4 +1,5 @@
-﻿using ProductCatalog.Entities.Models;
+﻿using ProductCatalog.Core.DataAccess;
+using ProductCatalog.Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,12 +8,8 @@ using System.Threading.Tasks;
 
 namespace ProductCatalog.DataAccess.Abstract
 {
-    public interface IProductDal
+    public interface IProductDal : IEntityRepository<Product>
     {
-        Task<List<Product>> GetAllAsync();
-        Task<Product?> GetByIdAsync(int id);
-        Task AddAsync(Product product);
-        Task UpdateAsync(Product product);
-        Task DeleteAsync(int id);
+        
     }
 }

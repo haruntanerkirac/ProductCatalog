@@ -12,9 +12,12 @@ namespace ProductCatalog.API.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _productService;
-        public ProductsController(IProductService productService)
+        private readonly IValidator<ProductCreateDto> _createValidator;
+
+        public ProductsController(IProductService productService, IValidator<ProductCreateDto> createValidator)
         {
             _productService = productService;
+            _createValidator = createValidator;
         }
 
         [HttpGet]
@@ -40,15 +43,15 @@ namespace ProductCatalog.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddProduct([FromBody] ProductCreateDto dto, [FromServices] IValidator<ProductCreateDto> validator)
+        public async Task<IActionResult> AddProduct([FromBody] ProductCreateDto dto)
         {
-            var validationResult = await validator.ValidateAsync(dto);
+            var result = await _createValidator.ValidateAsync(dto);
 
-            if (!validationResult.IsValid)
+            if (!result.IsValid)
             {
-                var errors = validationResult.Errors
-                    .Select(e => new {Field = e.PropertyName, Error = e.ErrorMessage});
-                return BadRequest(new {Errors = errors});
+                var errors = result.Errors
+                    .Select(e => new { Field = e.PropertyName, Error = e.ErrorMessage });
+                return BadRequest(new { Errors = errors });
             }
 
             var product = new Product
@@ -59,19 +62,16 @@ namespace ProductCatalog.API.Controllers
             };
 
             await _productService.AddAsync(product);
-            return Ok(product);
+            return Created();
         }
 
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateProduct([FromRoute] int id, Product product)
+        public async Task<IActionResult> UpdateProduct([FromRoute] int id, [FromBody] Product product)
         {
             if (id != product.Id)
                 return BadRequest("ID eşleşmiyor.");
 
             var entity = await _productService.GetByIdAsync(id);
-
-            if (entity is null)
-                return NotFound();
 
             await _productService.UpdateAsync(product);
             return NoContent();
@@ -80,13 +80,14 @@ namespace ProductCatalog.API.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteProduct([FromRoute] int id)
         {
-            var entity = await _productService.GetByIdAsync(id);
+            var product = await _productService.GetByIdAsync(id);
 
-            if (entity is null)
-                return NotFound();
+            if (product is null)
+                return NotFound($"Silinecek ürün bulunamadı (ID: {id})");
 
-            await _productService.DeleteAsync(id);
+            await _productService.DeleteAsync(product);
             return NoContent();
+
         }
     }
 }

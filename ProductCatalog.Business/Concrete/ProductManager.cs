@@ -21,7 +21,7 @@ namespace ProductCatalog.Business.Concrete
 
         public async Task AddAsync(Product product) => await _productDal.AddAsync(product);
 
-        public async Task DeleteAsync(int id) => await _productDal.DeleteAsync(id);
+        public async Task DeleteAsync(Product product) => await _productDal.DeleteAsync(product);
 
         public async Task<List<Product>> GetAllAsync() => await _productDal.GetAllAsync();
 
