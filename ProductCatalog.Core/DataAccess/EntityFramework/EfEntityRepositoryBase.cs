@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ProductCatalog.Core.DataAccess.EntityFramework
 {
-    public class EfEntityRepositoryBase<TEntity, TContext> : IEntityRepository<TEntity> where TEntity : class, IEntity ,new()
+    public class EfEntityRepositoryBase<TEntity, TContext> : IEntityRepository<TEntity> where TEntity : class, IEntity, new()
         where TContext : DbContext
     {
         private readonly TContext _context;

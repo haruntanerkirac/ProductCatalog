@@ -62,7 +62,7 @@ namespace ProductCatalog.API.Controllers
             //};
 
             await _productService.AddAsync(dto);
-            return Created();
+            return Ok();
         }
 
         [HttpPut("{id:int}")]

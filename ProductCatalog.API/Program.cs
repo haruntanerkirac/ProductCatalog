@@ -1,5 +1,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using NLog;
+using ProductCatalog.API.Extensions;
 using ProductCatalog.API.Utilities.AutoMapper;
 using ProductCatalog.API.Validators;
 using ProductCatalog.Business.Abstract;
@@ -16,6 +18,13 @@ builder.Services.AddDbContext<ProductCatalogDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("sqlConnection"))
 );
 
+LogManager.LoadConfiguration(String.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
+
+//LogManager.Setup().LoadConfigurationFromFile(Path.Combine(Directory.GetCurrentDirectory(), "nlog.config"));
+
+//LogManager.Setup().LoadConfigurationFromFile("nlog.config");
+
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -26,7 +35,7 @@ builder.Services.AddScoped<IProductDal, EfProductDal>();
 builder.Services.AddScoped<IProductService, ProductManager>();
 builder.Services.AddScoped<IValidator<ProductCreateDto>, ProductCreateValidator>();
 
-
+builder.Services.ConfigureLoggerService();
 
 //builder.Services.AddAutoMapper(typeof(Program));
 

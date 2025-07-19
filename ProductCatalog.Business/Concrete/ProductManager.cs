@@ -17,20 +17,32 @@ namespace ProductCatalog.Business.Concrete
     {
         private readonly IProductDal _productDal;
         private readonly IMapper _mapper;
+        private readonly ILoggerService _logger;
 
-        public ProductManager(IProductDal productDal, IMapper mapper)
+        public ProductManager(IProductDal productDal, IMapper mapper, ILoggerService logger)
         {
             _productDal = productDal;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task AddAsync(ProductCreateDto dto)
         {
-            var entity = _mapper.Map<Product>(dto);
-            await _productDal.AddAsync(entity);
+            try
+            {
+                var entity = _mapper.Map<Product>(dto);
+                await _productDal.AddAsync(entity);
 
+                _logger.LogInfo($"Yeni ürün eklendi: {entity.Name}");
+            }
+            catch (Exception ex)
+            {
+                string message = $"Ürün eklenirken hata : {ex.Message}";
+                _logger.LogError(message);
+                throw new Exception(message);
+            }
             //await _productDal.AddAsync(product);
-        }
+        } 
 
         public async Task DeleteAsync(Product product) => await _productDal.DeleteAsync(product);
 
